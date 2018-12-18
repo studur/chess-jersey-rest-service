@@ -71,7 +71,7 @@ public class ChessService {
 
       tournoi.addRound(round3);
 
-      tournoi.computeNewRatings();
+      tournoi.computeTournamentRatings();
 
       return tournoi.getPlayersStanding();
    }

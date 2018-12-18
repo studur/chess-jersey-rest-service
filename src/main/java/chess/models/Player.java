@@ -1,15 +1,14 @@
 package chess.models;
 
 
-
 /**
  * This class is responsible for representing a chess player.
  */
 public class Player implements Comparable<Player> {
 
-   private String prenom;
+   private String lastName;
 
-   private String nom;
+   private String firstName;
 
    private String fullName;
 
@@ -29,24 +28,30 @@ public class Player implements Comparable<Player> {
 
    private int ties = 0;
 
-   public Player() {
 
-   }
-
-   public Player(String prenom, String nom, double rating) {
-      this.nom = nom;
-      this.prenom = prenom;
-      this.fullName = prenom + " " + nom;
+   /**
+    * Simple Player constructor for a player with a permanent rating.
+    * @param lastName First name.
+    * @param firstName Last name.
+    * @param rating Rating value.
+    */
+   public Player(String lastName, String firstName, double rating) {
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.fullName = lastName + " " + firstName;
       this.rating = rating;
       this.oldRating = rating;
    }
 
-   public Player(String prenom, String nom, double rating, int unratedGamesPlayed) {
-      this.nom = nom;
-      this.prenom = prenom;
-      this.fullName = prenom + " " + nom;
-      this.rating = rating;
-      this.oldRating = rating;
+   /**
+    * Constructor for a new player without a rating or a player with a temporary rating.
+    * @param lastName
+    * @param firstName
+    * @param rating
+    * @param unratedGamesPlayed
+    */
+   public Player(String lastName, String firstName, double rating, int unratedGamesPlayed) {
+      this(lastName, firstName, rating);
       this.isRatingPermanent = false;
       this.unratedGamesPlayed = unratedGamesPlayed;
    }
@@ -66,20 +71,20 @@ public class Player implements Comparable<Player> {
       return 0;
    }
 
-   public String getPrenom() {
-      return prenom;
+   public String getLastName() {
+      return lastName;
    }
 
-   public void setPrenom(String prenom) {
-      this.prenom = prenom;
+   public void setLastName(String lastName) {
+      this.lastName = lastName;
    }
 
-   public String getNom() {
-      return nom;
+   public String getFirstName() {
+      return firstName;
    }
 
-   public void setNom(String nom) {
-      this.nom = nom;
+   public void setFirstName(String firstName) {
+      this.firstName = firstName;
    }
 
    public String getFullName() {
