@@ -3,7 +3,6 @@ package chess.models;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.management.PlatformLoggingMXBean;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,29 +77,24 @@ public class Tournament {
    public void addResult(Game game) {
       int coordPlayer1 = players.indexOf(game.player1);
       int coordPlayer2 = players.indexOf(game.player2);
-      double result2 = game.result;
+      double resultForPlayer1 = game.result;
+      double resultForPlayer2 = game.result;
 
-      if (game.result == 1) {
-         result2 = 0;
-         game.player1.setWins(game.player1.getWins() + 1);
-         game.player2.setLosses(game.player2.getLosses() + 1);
-         game.player1.setScore(game.player1.getScore() + 1);
-
-      } else if (game.result == 0) {
-         game.player1.setLosses(game.player1.getLosses() + 1);
-         game.player2.setWins(game.player2.getWins() + 1);
-         game.player2.setScore(game.player2.getScore() + 1);
-         result2 = 1;
-
+      if (resultForPlayer1 == 1) {
+         resultForPlayer2 = 0;
+         game.player1.addWin();
+         game.player2.addLoss();
+      } else if (resultForPlayer1 == 0) {
+         resultForPlayer2 = 1;
+         game.player1.addLoss();
+         game.player2.addWin();
       } else {
-         game.player1.setTies(game.player1.getTies() + 1);
-         game.player2.setTies(game.player2.getTies() + 1);
-         game.player1.setScore(game.player1.getScore() + 0.5);
-         game.player2.setScore(game.player2.getScore() + 0.5);
+         game.player1.addTie();
+         game.player2.addTie();
       }
 
-      resultMatrix[coordPlayer1][coordPlayer2] += Game.getDeltaFromGame(game.player1, game.player2, game.result);
-      resultMatrix[coordPlayer2][coordPlayer1] += Game.getDeltaFromGame(game.player2, game.player1, result2);
+      resultMatrix[coordPlayer1][coordPlayer2] += Game.getDeltaFromGame(game.player1, game.player2, resultForPlayer1);
+      resultMatrix[coordPlayer2][coordPlayer1] += Game.getDeltaFromGame(game.player2, game.player1, resultForPlayer2);
    }
 
    /**
@@ -109,42 +103,37 @@ public class Tournament {
     */
    public void computeTournamentRatings() {
 
-      // first compute the ratings of unrated players.
       List<Player> unratedPlayers = getNewPlayers();
+      List<Player> playersWithTemporaryRating = getPlayersWithTemporaryRating();
+      List<Player> permanentPlayers = getPermanentPlayers();
+
+      // first compute the ratings of unrated players.
       if (unratedPlayers.size() > 0) {
          unratedPlayers.forEach(this::computeRatingForNewPlayer);
       }
 
       // Then compute ratings for players with temporary rating.
-      List<Player> playersWithTemporaryRating = getPlayersWithTemporaryRating();
-      // But before, remove the unrated players processed in the previous step.
-      for (Player player : unratedPlayers) {
-         playersWithTemporaryRating.remove(player);
-      }
-
       if (playersWithTemporaryRating.size() > 0) {
          playersWithTemporaryRating.forEach(this::computeRatingForPlayerWithTemporaryRating);
       }
 
-      // Add all the game results to the result matrix.
+      addGameResultsToResultMatrix();
+      computeRatingForPermanentPlayers(permanentPlayers);
+      computePlayerStanding();
+   }
+
+   private void addGameResultsToResultMatrix() {
       for (Round round : rounds) {
          for (Game game : round.getGames()) {
             addResult(game);
          }
       }
+   }
 
-      // Generate a list of remaining players to be processed.
-      List<Player> remainingPlayers = new ArrayList<>();
-      for (Player player: players){
-         if (!unratedPlayers.contains(player) && !playersWithTemporaryRating.contains(player)) {
-            remainingPlayers.add(player);
-         }
-      }
-
-      // Compute rating for all remaining players.
-      for (Player player : remainingPlayers) {
+   private void computeRatingForPermanentPlayers(List<Player> permanentPlayers) {
+      for (Player player : permanentPlayers) {
          double newRating = player.getRating();
-         for (int i = 0; i < remainingPlayers.size(); i++) {
+         for (int i = 0; i < players.size(); i++) {
             newRating += resultMatrix[players.indexOf(player)][i];
          }
 
@@ -160,7 +149,6 @@ public class Tournament {
          }
          player.setRating(newRating + bonus);
       }
-      computePlayerStanding();
    }
 
    /**
@@ -168,24 +156,36 @@ public class Tournament {
     */
    private void computePlayerStanding() {
       IntStream.range(0, players.size()).forEach(i -> playersStanding[i] = players.get(i));
-      insertionSortOnScore(playersStanding);
+      Player.insertionSortOnScore(playersStanding);
    }
 
    /**
     * Method used to print the Tournament report to the console.
     */
    public void printTournamentReport() {
-      System.out.println("*********************");
-      System.out.println("* Tournament report *");
-      System.out.println("*********************");
+      System.out.println(getTournamentReport());
+   }
+
+   /**
+    * Method used to print the Tournament report to the console.
+    */
+   public String getTournamentReport() {
+      StringBuilder report = new StringBuilder();
+      report.append("*********************\n");
+      report.append("* Tournament report *\n");
+      report.append("*********************\n");
       for (Player aPlayersStanding : playersStanding) {
-         System.out.print(aPlayersStanding.getFullName() + " : ");
-         System.out.print(aPlayersStanding.getWins() + " wins ");
-         System.out.print(aPlayersStanding.getLosses() + " losses ");
-         System.out.print(aPlayersStanding.getTies() + " ties ");
-         System.out.print("New rating is " + new DecimalFormat("##").format(aPlayersStanding.getRating()));
-         System.out.println();
+         report.append(aPlayersStanding.getFullName() + " : ");
+         report.append(aPlayersStanding.getWins() + " wins ");
+         report.append(aPlayersStanding.getLosses() + " losses ");
+         report.append(aPlayersStanding.getTies() + " ties ");
+         report.append("New rating is " + new DecimalFormat("##").format(aPlayersStanding.getRating()));
+         if (!aPlayersStanding.isRatingPermanent()) {
+            report.append("/" + aPlayersStanding.getUnratedGamesPlayed());
+         }
+         report.append("\n");
       }
+      return report.toString();
    }
 
    /**
@@ -212,24 +212,6 @@ public class Tournament {
       }
    }
 
-   /**
-    * Sorts an array of {@link Player} using a insertion sort algorithm based on their score.
-    *
-    * @param players Array of {@link Player}
-    */
-   private static void insertionSortOnScore(Player[] players) {
-      //TODO Add a step to sort equal score on their tournament performance rating.
-      int length = players.length;
-      for (int playerNumber = 1; playerNumber < length; playerNumber++) {
-         Player key = players[playerNumber];
-         int otherPlayerNumber = playerNumber - 1;
-         while ((otherPlayerNumber >= 0) && (players[otherPlayerNumber].getScore() < key.getScore())) {
-            players[otherPlayerNumber + 1] = players[otherPlayerNumber];
-            otherPlayerNumber--;
-         }
-         players[otherPlayerNumber + 1] = key;
-      }
-   }
 
    /**
     * Get the list of {@link Player} without a rating.
@@ -247,6 +229,13 @@ public class Tournament {
             .filter(p -> p.getRating() > 0)
             .filter(p -> p.getUnratedGamesPlayed() > 0)
             .filter(p -> p.getUnratedGamesPlayed() < MIN_NUM_GAMES_PLAYED_FOR_PERMANENT_RATING)
+            .collect(Collectors.toList());
+   }
+
+   private List<Player> getPermanentPlayers(){
+      return players.stream()
+            .filter(p -> p.getRating() > 0)
+            .filter(p -> p.getUnratedGamesPlayed() == 0)
             .collect(Collectors.toList());
    }
 
@@ -344,9 +333,13 @@ public class Tournament {
       double newCompoundRating = (newRating * totalGames + player.getUnratedGamesPlayed() * player.getRating()) / totalGamePlayedEver;
 
       player.setRating(newCompoundRating);
-      player.setUnratedGamesPlayed(totalGamePlayedEver);
-      player.setRatingPermanent(false);
-
+      if (totalGamePlayedEver > MIN_NUM_GAMES_PLAYED_FOR_PERMANENT_RATING) {
+         player.setUnratedGamesPlayed(0);
+         player.setRatingPermanent(true);
+      } else {
+         player.setUnratedGamesPlayed(totalGamePlayedEver);
+         player.setRatingPermanent(false);
+      }
    }
 
 }

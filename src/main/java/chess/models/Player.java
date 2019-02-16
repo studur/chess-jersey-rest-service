@@ -7,33 +7,24 @@ package chess.models;
 public class Player implements Comparable<Player> {
 
    private String lastName;
-
    private String firstName;
-
    private String fullName;
-
    private double rating;
-
    private boolean isRatingPermanent = true;
-
    private double oldRating;
-
    private double score = 0;
-
    private int unratedGamesPlayed = 0;
-
    private int wins = 0;
-
    private int losses = 0;
-
    private int ties = 0;
 
 
    /**
     * Simple Player constructor for a player with a permanent rating.
-    * @param lastName First name.
+    *
+    * @param lastName  First name.
     * @param firstName Last name.
-    * @param rating Rating value.
+    * @param rating    Rating value.
     */
    public Player(String lastName, String firstName, double rating) {
       this.firstName = firstName;
@@ -45,6 +36,7 @@ public class Player implements Comparable<Player> {
 
    /**
     * Constructor for a new player without a rating or a player with a temporary rating.
+    *
     * @param lastName
     * @param firstName
     * @param rating
@@ -143,6 +135,20 @@ public class Player implements Comparable<Player> {
       this.wins = wins;
    }
 
+   public void addWin() {
+      this.wins++;
+      this.score++;
+   }
+
+   public void addLoss() {
+      this.losses++;
+   }
+
+   public void addTie() {
+      this.ties++;
+      this.score += 0.5;
+   }
+
    public int getLosses() {
       return losses;
    }
@@ -157,5 +163,24 @@ public class Player implements Comparable<Player> {
 
    public void setTies(int ties) {
       this.ties = ties;
+   }
+
+   /**
+    * Sorts an array of {@link Player} using a insertion sort algorithm based on their score.
+    *
+    * @param players Array of {@link Player}
+    */
+   public static void insertionSortOnScore(Player[] players) {
+      //TODO Add a step to sort equal score on their tournament performance rating.
+      int length = players.length;
+      for (int playerNumber = 1; playerNumber < length; playerNumber++) {
+         Player key = players[playerNumber];
+         int otherPlayerNumber = playerNumber - 1;
+         while ((otherPlayerNumber >= 0) && (players[otherPlayerNumber].getScore() < key.getScore())) {
+            players[otherPlayerNumber + 1] = players[otherPlayerNumber];
+            otherPlayerNumber--;
+         }
+         players[otherPlayerNumber + 1] = key;
+      }
    }
 }

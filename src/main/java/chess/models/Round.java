@@ -32,6 +32,10 @@ public class Round {
       games.add(game);
    }
 
+   public void addGame(Player player1, Player player2, double result){
+      games.add(new Game(player1, player2, result));
+   }
+
    public int getSize() {
       return games.size();
    }
