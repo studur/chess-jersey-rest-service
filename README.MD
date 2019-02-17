@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/studur/chess-jersey-rest-service.svg?branch=master)](https://travis-ci.org/studur/chess-jersey-rest-service)
 [![Coverage Status](https://coveralls.io/repos/github/studur/chess-jersey-rest-service/badge.svg?branch=master)](https://coveralls.io/github/studur/chess-jersey-rest-service?branch=master)
-[![Code Climate](https://codeclimate.com/github/codeclimate/codeclimate/badges/gpa.svg)](https://codeclimate.com/github/studur/chess-jersey-rest-service)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2d59811af9f71f0b1528/maintainability)](https://codeclimate.com/github/studur/chess-jersey-rest-service/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/2d59811af9f71f0b1528/test_coverage)](https://codeclimate.com/github/studur/chess-jersey-rest-service/test_coverage)
 
 ## Introduction
 
