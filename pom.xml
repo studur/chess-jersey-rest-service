@@ -22,10 +22,7 @@
               <artifactId>coveralls-maven-plugin</artifactId>
               <version>4.3.0</version>
               <configuration>
-                 <sourceEncoding>
-                    UTF-8
-                 </sourceEncoding>
-                 <repoToken>JflG7iaQ3KhS82AwgQoODzvmpGlNHZeip</repoToken>
+                 <sourceEncoding>UTF-8</sourceEncoding>
               </configuration>
            </plugin>
            <plugin>
