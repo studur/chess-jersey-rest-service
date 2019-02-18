@@ -75,7 +75,6 @@ public class ChessManager {
       try {
          String filename = "result-13";
          tournoi.printTournamentReportToCsvFile(filename);
-         ChessTables.convertCsvToXml(filename);
       } catch (Exception e) {
          e.printStackTrace();
       }
