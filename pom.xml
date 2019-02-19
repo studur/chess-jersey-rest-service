@@ -91,7 +91,6 @@
    </dependencies>
 
    <properties>
-      <env.MY_SECRET_KEY>abc123</env.MY_SECRET_KEY>
       <jersey.version>2.23.2</jersey.version>
    </properties>
     
