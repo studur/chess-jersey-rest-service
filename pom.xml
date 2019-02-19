@@ -22,6 +22,7 @@
               <artifactId>coveralls-maven-plugin</artifactId>
               <version>4.3.0</version>
               <configuration>
+                 <repoToken>${env.MY_SECRET_KEY}</repoToken>
                  <sourceEncoding>UTF-8</sourceEncoding>
               </configuration>
            </plugin>
@@ -90,6 +91,7 @@
    </dependencies>
 
    <properties>
+      <env.MY_SECRET_KEY>abc123</env.MY_SECRET_KEY>
       <jersey.version>2.23.2</jersey.version>
    </properties>
     
