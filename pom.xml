@@ -6,7 +6,7 @@
 
     <groupId>com.telagene</groupId>
     <artifactId>Chess-jersey-rest-service</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
@@ -46,6 +46,7 @@
                  <maxmem>256m</maxmem>
                  <!-- aggregated reports for multi-module projects -->
                  <aggregate>true</aggregate>
+                 <check/>
               </configuration>
            </plugin>
         </plugins>
