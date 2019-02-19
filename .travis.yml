@@ -1,4 +1,4 @@
 language: java
 
 after_success:
-  - mvn -DCOVERALLS=${COVERALLS} jacoco:report coveralls:report
+  - mvn  clean test jacoco:report coveralls:report -DCOVERALLS=${COVERALLS_REPO_TOKEN}
