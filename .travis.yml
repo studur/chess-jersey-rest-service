@@ -1,4 +1,7 @@
 language: java
 
+script:
+  - mvn test jacoco:report
+
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report
+  - mvn -DCOVERALLS=${COVERALLS} coveralls:report
