@@ -1,5 +1,4 @@
 language: java
 
-
 after_success:
-  - mvn clean -Dcoveralls.token=$MY_SECRET_KEY cobertura:cobertura coveralls:report
+  - mvn clean cobertura:cobertura coveralls:report -Dcoveralls.token=$MY_SECRET_KEY
