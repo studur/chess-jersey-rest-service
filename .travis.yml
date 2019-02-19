@@ -1,4 +1,4 @@
 language: java
 
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report
+  - mvn clean -Drepo_token=$repo_token cobertura:cobertura coveralls:report
