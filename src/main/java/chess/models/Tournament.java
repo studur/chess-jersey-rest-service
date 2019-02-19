@@ -26,6 +26,9 @@ public class Tournament {
 
    private Player[] playersStanding;
 
+   public Tournament() {
+   }
+
    /**
     * Single constructor.
     *
