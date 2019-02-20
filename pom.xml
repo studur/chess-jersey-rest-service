@@ -44,7 +44,8 @@
               <version>0.7.6.201602180812</version>
               <configuration>
                  <excludes>
-                    <exclude>chess.ChessManager</exclude>
+                    <exclude>chess/ChessManager.class</exclude>
+                    <exclude>chess/ChessService.class</exclude>
                  </excludes>
               </configuration>
               <executions>
