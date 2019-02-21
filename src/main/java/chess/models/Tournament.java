@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import chess.utils.TournamentReport;
+
 
 /**
  * This class is responsible for representing a chess tournament composed of a list of Player and Game.
@@ -103,9 +105,9 @@ public class Tournament {
     */
    public void computeTournamentRatings() {
 
-      List<Player> unratedPlayers = getNewPlayers();
-      List<Player> playersWithTemporaryRating = getPlayersWithTemporaryRating();
-      List<Player> permanentPlayers = getPermanentPlayers();
+      List<Player> unratedPlayers = Player.getNewPlayers(players);
+      List<Player> playersWithTemporaryRating = Player.getPlayersWithTemporaryRating(players);
+      List<Player> permanentPlayers = Player.getPermanentPlayers(players);
 
       // first compute the ratings of unrated players.
       if (unratedPlayers.size() > 0) {
@@ -119,7 +121,7 @@ public class Tournament {
 
       addGameResultsToResultMatrix();
       computeRatingForPermanentPlayers(permanentPlayers);
-      computePlayerStanding();
+      playersStanding = computePlayerStanding();
    }
 
    private void addGameResultsToResultMatrix() {
@@ -154,90 +156,11 @@ public class Tournament {
    /**
     * Method used to compute the standing of the player and sort the list.
     */
-   private void computePlayerStanding() {
+   private Player[] computePlayerStanding() {
       IntStream.range(0, players.size()).forEach(i -> playersStanding[i] = players.get(i));
-      Player.insertionSortOnScore(playersStanding);
+      return Player.insertionSortOnScore(playersStanding);
    }
 
-   /**
-    * Method used to print the Tournament report to the console.
-    */
-   public void printTournamentReport() {
-      System.out.println(getTournamentReport());
-   }
-
-   /**
-    * Method used to print the Tournament report to the console.
-    */
-   public String getTournamentReport() {
-      StringBuilder report = new StringBuilder();
-      report.append("*********************\n");
-      report.append("* Tournament report *\n");
-      report.append("*********************\n");
-      for (Player aPlayersStanding : playersStanding) {
-         report.append(aPlayersStanding.getFullName() + " : ");
-         report.append(aPlayersStanding.getWins() + " wins ");
-         report.append(aPlayersStanding.getLosses() + " losses ");
-         report.append(aPlayersStanding.getTies() + " ties ");
-         report.append("New rating is " + new DecimalFormat("##").format(aPlayersStanding.getRating()));
-         if (!aPlayersStanding.isRatingPermanent()) {
-            report.append("/" + aPlayersStanding.getUnratedGamesPlayed());
-         }
-         report.append("\n");
-      }
-      return report.toString();
-   }
-
-   /**
-    * Method used to print the {@link Tournament} report to a semi-colon separated CSV file.
-    *
-    * @param fileName Name of the CSV file generated.
-    * @throws IOException Thrown if IO problems with file generation.
-    */
-   public void printTournamentReportToCsvFile(String fileName) throws IOException {
-
-      try (BufferedWriter bufferedWriter = new BufferedWriter(
-            new FileWriter("./" + fileName + ".csv"))) {
-         bufferedWriter.write("Nom;Ancienne cote;Gains;Nulles;Pertes;Nouvelle cote");
-         bufferedWriter.newLine();
-         for (Player aPlayersStanding : playersStanding) {
-            bufferedWriter.write(aPlayersStanding.getFullName() + ";");
-            bufferedWriter.write(new DecimalFormat("##").format(aPlayersStanding.getOldRating()) + ";");
-            bufferedWriter.write(aPlayersStanding.getWins() + ";");
-            bufferedWriter.write(aPlayersStanding.getTies() + ";");
-            bufferedWriter.write(aPlayersStanding.getLosses() + ";");
-            bufferedWriter.write(new DecimalFormat("##").format(aPlayersStanding.getRating()));
-            bufferedWriter.newLine();
-         }
-      }
-   }
-
-
-   /**
-    * Get the list of {@link Player} without a rating.
-    *
-    * @return List of {@link Player}.
-    */
-   private List<Player> getNewPlayers() {
-      return players.stream()
-            .filter(p -> p.getRating() == 0)
-            .collect(Collectors.toList());
-   }
-
-   private List<Player> getPlayersWithTemporaryRating() {
-      return players.stream()
-            .filter(p -> p.getRating() > 0)
-            .filter(p -> p.getUnratedGamesPlayed() > 0)
-            .filter(p -> p.getUnratedGamesPlayed() < MIN_NUM_GAMES_PLAYED_FOR_PERMANENT_RATING)
-            .collect(Collectors.toList());
-   }
-
-   private List<Player> getPermanentPlayers(){
-      return players.stream()
-            .filter(p -> p.getRating() > 0)
-            .filter(p -> p.getUnratedGamesPlayed() == 0)
-            .collect(Collectors.toList());
-   }
 
    /**
     * Calculates the rating of a new player without a rating. This step is usualy executed before all other

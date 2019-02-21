@@ -6,6 +6,7 @@ import java.util.List;
 import chess.models.Player;
 import chess.models.Round;
 import chess.models.Tournament;
+import chess.utils.TournamentReport;
 
 public class ChessManager {
 
@@ -70,11 +71,11 @@ public class ChessManager {
       tournoi.addRound(round3);
 
       tournoi.computeTournamentRatings();
-      tournoi.printTournamentReport();
+      TournamentReport.printTournamentReport(players);
 
       try {
          String filename = "result-13";
-         tournoi.printTournamentReportToCsvFile(filename);
+         TournamentReport.printTournamentReportToCsvFile(players, filename);
       } catch (Exception e) {
          e.printStackTrace();
       }

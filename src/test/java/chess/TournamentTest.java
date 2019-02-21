@@ -13,6 +13,7 @@ import chess.models.Game;
 import chess.models.Player;
 import chess.models.Round;
 import chess.models.Tournament;
+import chess.utils.TournamentReport;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -191,9 +192,9 @@ public class TournamentTest {
 
       tournoi.computeTournamentRatings();
       tournoi.getResultMatrix();
-      assertTrue(tournoi.getTournamentReport().length()>0);
+      assertTrue(TournamentReport.getTournamentReport(players).length()>0);
 
-      tournoi.printTournamentReportToCsvFile("test");
+      TournamentReport.printTournamentReportToCsvFile(players,"test");
       boolean fileExists = false;
       if (Files.exists(Paths.get("test.csv"))) {
          fileExists=true;
@@ -272,12 +273,12 @@ public class TournamentTest {
       tournoi.addRound(round3);
 
       tournoi.computeTournamentRatings();
-      assertEquals(tournoi.getPlayersStanding()[0].getFullName(), "Jimmy Forest");
+      assertEquals("Jimmy Forest", tournoi.getPlayersStanding()[0].getFullName());
       assertFalse(player9.isRatingPermanent());
       assertFalse(player10.isRatingPermanent());
       assertTrue(player11.isRatingPermanent());
 
-      tournoi.printTournamentReport();
+      TournamentReport.printTournamentReport(players);
    }
 
 }

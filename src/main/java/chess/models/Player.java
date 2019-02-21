@@ -1,10 +1,16 @@
 package chess.models;
 
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * This class is responsible for representing a chess player.
  */
 public class Player implements Comparable<Player> {
+
+   public static final int MIN_NUM_GAMES_PLAYED_FOR_PERMANENT_RATING = 8;
 
    private String lastName;
    private String firstName;
@@ -168,10 +174,11 @@ public class Player implements Comparable<Player> {
    /**
     * Sorts an array of {@link Player} using a insertion sort algorithm based on their score.
     *
-    * @param players Array of {@link Player}
+    * @param unsortedPlayers Array of {@link Player}
     */
-   public static void insertionSortOnScore(Player[] players) {
+   public static Player[] insertionSortOnScore(Player[] unsortedPlayers) {
       //TODO Add a step to sort equal score on their tournament performance rating.
+      Player[] players = Arrays.copyOf(unsortedPlayers, unsortedPlayers.length);
       int length = players.length;
       for (int playerNumber = 1; playerNumber < length; playerNumber++) {
          Player key = players[playerNumber];
@@ -182,5 +189,33 @@ public class Player implements Comparable<Player> {
          }
          players[otherPlayerNumber + 1] = key;
       }
+      return players;
    }
+
+   /**
+    * Get the list of {@link Player} without a rating.
+    *
+    * @return List of {@link Player}.
+    */
+   public static List<Player> getNewPlayers(List<Player> players) {
+      return players.stream()
+            .filter(p -> p.getRating() == 0)
+            .collect(Collectors.toList());
+   }
+
+   public static List<Player> getPlayersWithTemporaryRating(List<Player> players) {
+      return players.stream()
+            .filter(p -> p.getRating() > 0)
+            .filter(p -> p.getUnratedGamesPlayed() > 0)
+            .filter(p -> p.getUnratedGamesPlayed() < MIN_NUM_GAMES_PLAYED_FOR_PERMANENT_RATING)
+            .collect(Collectors.toList());
+   }
+
+   public static List<Player> getPermanentPlayers(List<Player> players) {
+      return players.stream()
+            .filter(p -> p.getRating() > 0)
+            .filter(p -> p.getUnratedGamesPlayed() == 0)
+            .collect(Collectors.toList());
+   }
+
 }
