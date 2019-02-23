@@ -1,16 +1,11 @@
 package chess.models;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import chess.utils.TournamentReport;
 
 
 /**
@@ -208,25 +203,23 @@ public class Tournament {
       int average = 0;
       int victories = 0;
       int totalGames = 0;
+      List<Game> games = gamesFlatList(rounds);
 
+      for (Game game : games) {
+         if (game.player1 == player) {
+            average += game.player2.getRating();
+            victories += game.result;
+            totalGames++;
+         }
 
-      for (Round round : rounds) {
-         for (Game game : round.getGames()) {
-            if (game.player1 == player) {
-               average += game.player2.getRating();
+         if (game.player2 == player) {
+            average += game.player1.getRating();
+            if (game.result == 0) {
+               victories += 1;
+            } else if (game.result == 0.5) {
                victories += game.result;
-               totalGames++;
             }
-
-            if (game.player2 == player) {
-               average += game.player1.getRating();
-               if (game.result == 0) {
-                  victories += 1;
-               } else if (game.result == 0.5) {
-                  victories += game.result;
-               }
-               totalGames++;
-            }
+            totalGames++;
          }
       }
       average = average / totalGames;
@@ -237,6 +230,13 @@ public class Tournament {
       int newRating = average + modifier;
 
       return new int[]{newRating, totalGames};
+   }
+
+   private List<Game> gamesFlatList(List<Round> rounds) {
+      return rounds.stream()
+            .map(Round::getGames)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
    }
 
    /**
